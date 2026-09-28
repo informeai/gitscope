@@ -1,0 +1,32 @@
+/* Rules only used by the exported HTML report (inlined after style.css). */
+
+.report main { padding-top: 28px; }
+.report .panel { margin-bottom: 16px; }
+.report-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+  gap: 8px 16px; margin-bottom: 16px;
+}
+.report-head .brand { font-size: 20px; }
+.report-filters ul { margin: 0; padding-left: 18px; }
+.report-filters li { margin: 2px 0; }
+.report-filters p { margin: 0; }
+.report .timeline.static { height: auto; }
+.report .timeline svg { height: auto; }
+.report td.subject.wrap { white-space: normal; max-width: none; }
+.report-foot { font-size: 12px; text-align: center; margin-top: 24px; }
+
+@media print {
+  :root {
+    --bg: #ffffff; --surface: #ffffff; --surface-2: #f2f2f2; --border: #d9d9d9;
+    --text: #111111; --muted: #555555; --bar: #c8643c; --accent: #c8643c;
+    --add: #1f6b3f; --del: #a3291f; --shadow: none;
+  }
+  body { background: #fff; font-size: 11px; }
+  .report main { max-width: none; padding: 0; }
+  .panel, .card { box-shadow: none; }
+  .panel { break-inside: avoid-page; }
+  table { break-inside: auto; }
+  tr { break-inside: avoid; }
+  thead { display: table-header-group; }
+  .meter .fill, .timeline .bar { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}

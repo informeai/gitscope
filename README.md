@@ -37,13 +37,30 @@ os que deixaram de existir (rebase, branch apagada).
 
 Com filtro de caminho, as contagens de linhas consideram só os arquivos daquele caminho.
 
+## Exportar
+
+As exportações sempre respeitam os filtros ativos.
+
+- **⤓ Exportar relatório**: baixa um `.html` autocontido (sem scripts nem arquivos
+  externos) com filtros aplicados, resumo, linha do tempo (tooltip ao passar o mouse),
+  até 100 autores, os 50 arquivos mais alterados e os 200 commits mais recentes.
+  Abre em qualquer navegador e tem estilo de impressão: "Imprimir → Salvar como PDF".
+- **⤓ CSV** (na barra das abas): baixa todas as linhas da aba atual (commits,
+  autores ou arquivos). Usa `;` como separador e BOM UTF-8, para o Excel em pt-BR
+  abrir em colunas e com acentos; datas em ISO 8601. Textos que viriam como
+  fórmula (`=`, `+`, `-`, `@`) recebem um `'` na frente.
+
+Também dá para baixar direto pela API, por exemplo
+`/api/export/report?since=...&path=internal/` ou `/api/export/commits.csv?author=...`.
+
 ## Estrutura
 
 ```
 cmd/gitscope     CLI: indexa e sobe o servidor
 internal/gitlog  execução e parsing do git
 internal/store   SQLite: sincronização incremental e consultas com filtros
-internal/server  API JSON + arquivos estáticos
+internal/server  API JSON, exportações e arquivos estáticos
+internal/report  relatório HTML exportado (template + SVG da linha do tempo)
 web/             interface (HTML/CSS/JS sem build, embutida no binário)
 ```
 

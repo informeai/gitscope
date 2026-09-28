@@ -62,7 +62,11 @@
       </label>
     </section>
 
-    <div class="chips" id="chips"></div>
+    <div class="bar">
+      <div class="chips" id="chips"></div>
+      <a class="btn" id="export-report" href="#" download
+         title="Baixa um HTML autocontido com o que está na tela, respeitando os filtros">⤓ Exportar relatório</a>
+    </div>
     <div class="error" id="error" hidden></div>
 
     <section class="cards" id="cards"></section>
@@ -80,6 +84,8 @@
       <button type="button" data-tab="commits">Commits</button>
       <button type="button" data-tab="authors">Autores</button>
       <button type="button" data-tab="files">Arquivos</button>
+      <a class="btn small" id="export-csv" href="#" download
+         title="Baixa todas as linhas desta aba no filtro atual (separador ;)">⤓ CSV</a>
     </nav>
     <section class="panel" id="tab-body"></section>
   </main>

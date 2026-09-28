@@ -123,8 +123,13 @@ button.input { text-align: left; min-width: 170px; }
 .picker-item .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .popover-foot { display: flex; justify-content: flex-end; }
 
-/* chips */
-.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; min-height: 0; }
+/* chips and export */
+.bar { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; min-height: 32px; align-items: center; }
+a.btn { text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; }
+.btn.small { padding: 4px 10px; font-size: 12.5px; }
+.tabs { align-items: center; }
+.tabs #export-csv { margin-left: auto; }
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
   background: var(--accent-soft); color: var(--accent);

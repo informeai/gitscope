@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Repo}} · relatório gitscope · {{dateTime .Generated}}</title>
+  <style>{{.CSS}}</style>
+</head>
+<body class="report">
+  <main>
+    <header class="report-head">
+      <div class="brand"><span class="logo">◎</span> gitscope <span class="repo">{{.Repo}}</span></div>
+      <div class="muted">
+        Relatório gerado em {{dateTime .Generated}}{{if .Head}} · HEAD em {{.Head}}{{end}}
+      </div>
+    </header>
+
+    <section class="panel report-filters">
+      <h2>Filtros aplicados</h2>
+      {{if .Filters}}
+        <ul>{{range .Filters}}<li>{{.}}</li>{{end}}</ul>
+      {{else}}
+        <p class="muted">Nenhum: histórico completo, sem commits de merge.</p>
+      {{end}}
+    </section>
+
+    <section class="cards">
+      <div class="card"><div class="label">Commits</div><div class="value">{{num .Summary.Commits}}</div>
+        <div class="sub">{{if .Summary.First}}{{date .Summary.First}} – {{date .Summary.Last}}{{else}}nenhum no filtro{{end}}</div></div>
+      <div class="card"><div class="label">Autores</div><div class="value">{{num .Summary.Authors}}</div><div class="sub">&nbsp;</div></div>
+      <div class="card"><div class="label">Linhas adicionadas</div><div class="value add">+{{num .Summary.Insertions}}</div><div class="sub">&nbsp;</div></div>
+      <div class="card"><div class="label">Linhas removidas</div><div class="value del">−{{num .Summary.Deletions}}</div><div class="sub">&nbsp;</div></div>
+      <div class="card"><div class="label">Arquivos tocados</div><div class="value">{{num .Summary.Files}}</div><div class="sub">&nbsp;</div></div>
+    </section>
+
+    <section class="panel">
+      <h2>Linha do tempo <span class="muted">{{.BucketName}}</span></h2>
+      <div class="timeline static">{{.TimelineSVG}}</div>
+    </section>
+
+    <section class="panel">
+      <h2>Autores
+        <span class="muted">{{if gt .AuthorsTotal (len .Authors)}}{{len .Authors}} de {{num .AuthorsTotal}}, por número de commits{{else}}{{num .AuthorsTotal}}{{end}}</span>
+      </h2>
+      {{if .Authors}}
+      <table>
+        <thead><tr><th>Autor</th><th>Commits</th><th class="num">Linhas</th><th class="num">Arquivos</th>
+          <th class="num">Primeiro</th><th class="num">Último</th></tr></thead>
+        <tbody>
+        {{range .Authors}}
+          <tr>
+            <td><strong>{{.Name}}</strong><div class="muted mono">{{.Email}}</div></td>
+            <td><div class="meter"><div class="track"><div class="fill" style="width:{{pct .Commits $.MaxAuthorCount}}%"></div></div><span class="num">{{num .Commits}}</span></div></td>
+            <td class="num"><span class="add">+{{num .Insertions}}</span> <span class="del">−{{num .Deletions}}</span></td>
+            <td class="num">{{num .Files}}</td>
+            <td class="num muted">{{date .First}}</td>
+            <td class="num muted">{{date .Last}}</td>
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+      {{else}}<div class="empty">Nenhum autor no filtro atual</div>{{end}}
+    </section>
+
+    <section class="panel">
+      <h2>Arquivos mais alterados <span class="muted">top {{len .Files}}</span></h2>
+      {{if .Files}}
+      <table>
+        <thead><tr><th>Arquivo</th><th>Commits que alteraram</th><th class="num">Churn</th>
+          <th class="num">Autores</th><th class="num">Última alteração</th></tr></thead>
+        <tbody>
+        {{range .Files}}
+          <tr class="{{if not .Exists}}gone{{end}}">
+            <td class="path">{{.Path}}{{if not .Exists}}<span class="tag">removido</span>{{end}}</td>
+            <td><div class="meter"><div class="track"><div class="fill" style="width:{{pct .Changes $.MaxFileCount}}%"></div></div><span class="num">{{num .Changes}}</span></div></td>
+            <td class="num">{{num .Churn}}</td>
+            <td class="num">{{num .Authors}}</td>
+            <td class="num muted">{{date .Last}}</td>
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+      {{else}}<div class="empty">Nenhum arquivo no filtro atual</div>{{end}}
+    </section>
+
+    <section class="panel">
+      <h2>Commits
+        <span class="muted">{{if gt .Summary.Commits (len .Commits)}}{{len .Commits}} mais recentes de {{num .Summary.Commits}}{{else}}{{num .Summary.Commits}}{{end}}</span>
+      </h2>
+      {{if .Commits}}
+      <table>
+        <thead><tr><th>Hash</th><th>Mensagem</th><th>Autor</th><th class="num">Data</th><th class="num">Linhas</th></tr></thead>
+        <tbody>
+        {{range .Commits}}
+          <tr>
+            <td class="mono">{{short .Hash}}</td>
+            <td class="subject wrap">{{.Subject}}{{if .Merge}}<span class="tag">merge</span>{{end}}</td>
+            <td>{{.AuthorName}}</td>
+            <td class="num muted">{{date .AuthorTime}}</td>
+            <td class="num"><span class="add">+{{num .Insertions}}</span> <span class="del">−{{num .Deletions}}</span></td>
+          </tr>
+        {{end}}
+        </tbody>
+      </table>
+      {{else}}<div class="empty">Nenhum commit no filtro atual</div>{{end}}
+    </section>
+
+    <footer class="muted report-foot">Gerado pelo gitscope a partir do histórico local do repositório.</footer>
+  </main>
+</body>
+</html>

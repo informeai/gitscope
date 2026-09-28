@@ -24,11 +24,12 @@ const maxPatch = 400 * 1024
 type Server struct {
 	store *store.Store
 	root  string
+	web   fs.FS
 	mux   *http.ServeMux
 }
 
 func New(st *store.Store, root string, web fs.FS) *Server {
-	s := &Server{store: st, root: root, mux: http.NewServeMux()}
+	s := &Server{store: st, root: root, web: web, mux: http.NewServeMux()}
 	s.mux.HandleFunc("GET /api/repo", s.repo)
 	s.mux.HandleFunc("GET /api/refs", s.refs)
 	s.mux.HandleFunc("GET /api/summary", s.summary)
@@ -38,6 +39,8 @@ func New(st *store.Store, root string, web fs.FS) *Server {
 	s.mux.HandleFunc("GET /api/authors", s.authors)
 	s.mux.HandleFunc("GET /api/files", s.files)
 	s.mux.HandleFunc("POST /api/sync", s.sync)
+	s.mux.HandleFunc("GET /api/export/report", s.exportReport)
+	s.mux.HandleFunc("GET /api/export/{file}", s.exportCSV)
 	s.mux.Handle("GET /", http.FileServerFS(web))
 	return s
 }
@@ -183,12 +186,9 @@ func (s *Server) timeline(w http.ResponseWriter, r *http.Request) {
 		fail(w, err)
 		return
 	}
-	bucket := r.URL.Query().Get("bucket")
-	if bucket == "" {
-		bucket = "week"
-	}
-	if bucket != "day" && bucket != "week" && bucket != "month" {
-		fail(w, badRequest{"bucket must be day, week or month"})
+	bucket, err := bucketParam(r)
+	if err != nil {
+		fail(w, err)
 		return
 	}
 	buckets, err := s.store.Timeline(r.Context(), f, bucket)
@@ -197,6 +197,17 @@ func (s *Server) timeline(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, map[string]any{"bucket": bucket, "buckets": buckets})
+}
+
+func bucketParam(r *http.Request) (string, error) {
+	switch b := r.URL.Query().Get("bucket"); b {
+	case "":
+		return "week", nil
+	case "day", "week", "month":
+		return b, nil
+	default:
+		return "", badRequest{"bucket must be day, week or month"}
+	}
 }
 
 func (s *Server) commits(w http.ResponseWriter, r *http.Request) {
@@ -259,11 +270,16 @@ func (s *Server) files(w http.ResponseWriter, r *http.Request) {
 		fail(w, err)
 		return
 	}
-	tracked, _ := gitlog.TrackedFiles(r.Context(), s.root) // empty repo: nothing tracked
+	s.markExisting(r.Context(), rows)
+	writeJSON(w, rows)
+}
+
+// markExisting flags the files still present at HEAD.
+func (s *Server) markExisting(ctx context.Context, rows []store.FileRow) {
+	tracked, _ := gitlog.TrackedFiles(ctx, s.root) // empty repo: nothing tracked
 	for i := range rows {
 		rows[i].Exists = tracked[rows[i].Path]
 	}
-	writeJSON(w, rows)
 }
 
 func (s *Server) sync(w http.ResponseWriter, r *http.Request) {

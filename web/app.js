@@ -79,6 +79,7 @@ async function refresh() {
   $('#error').hidden = true;
   try {
     const bucket = pickBucket();
+    updateExportLinks(bucket);
     const [summary, timeline] = await Promise.all([
       api('summary'),
       api('timeline', withParam(filterParams(), 'bucket', bucket)),
@@ -93,6 +94,12 @@ async function refresh() {
 }
 
 function withParam(p, key, value) { p.set(key, value); return p; }
+
+// Export links always mirror the current filters and tab.
+function updateExportLinks(bucket) {
+  $('#export-report').href = `/api/export/report?${withParam(filterParams(), 'bucket', bucket)}`;
+  $('#export-csv').href = `/api/export/${state.tab}.csv?${filterParams()}`;
+}
 
 function showError(err) {
   $('#error').textContent = `Erro: ${err.message}`;
