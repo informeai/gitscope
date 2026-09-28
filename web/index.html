@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>gitscope</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo">◎</span> gitscope <span class="repo" id="repo-name"></span></div>
+    <div class="repo-meta" id="repo-meta"></div>
+    <button class="btn" id="sync-btn" title="Lê commits novos do repositório">Atualizar índice</button>
+  </header>
+
+  <main>
+    <section class="filters">
+      <label class="field">
+        <span>Branch</span>
+        <select id="f-ref"></select>
+      </label>
+
+      <div class="field picker">
+        <span>Autores</span>
+        <button class="input" id="f-authors-btn" type="button">Todos</button>
+        <div class="popover" id="f-authors-pop" hidden>
+          <input class="input" id="f-authors-search" placeholder="Buscar autor" autocomplete="off">
+          <div class="picker-list" id="f-authors-list"></div>
+          <div class="popover-foot">
+            <button class="link" id="f-authors-clear" type="button">Limpar seleção</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span>Período</span>
+        <div class="period">
+          <div class="presets" id="f-presets">
+            <button type="button" data-days="30">30d</button>
+            <button type="button" data-days="90">90d</button>
+            <button type="button" data-days="365">1a</button>
+            <button type="button" data-days="0">Tudo</button>
+          </div>
+          <input class="input" type="date" id="f-since" aria-label="De">
+          <span class="muted">até</span>
+          <input class="input" type="date" id="f-until" aria-label="Até">
+        </div>
+      </div>
+
+      <label class="field grow">
+        <span>Caminho</span>
+        <input class="input" id="f-path" placeholder="ex.: internal/finance" autocomplete="off">
+      </label>
+
+      <label class="field grow">
+        <span>Mensagem</span>
+        <input class="input" id="f-q" placeholder="buscar no assunto do commit" autocomplete="off">
+      </label>
+
+      <label class="check">
+        <input type="checkbox" id="f-merges"> incluir merges
+      </label>
+    </section>
+
+    <div class="chips" id="chips"></div>
+    <div class="error" id="error" hidden></div>
+
+    <section class="cards" id="cards"></section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Linha do tempo <span class="muted" id="bucket-label"></span></h2>
+        <span class="hint">clique ou arraste para filtrar o período · duplo clique para voltar</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+      <div class="tooltip" id="tooltip" hidden></div>
+    </section>
+
+    <nav class="tabs" id="tabs">
+      <button type="button" data-tab="commits">Commits</button>
+      <button type="button" data-tab="authors">Autores</button>
+      <button type="button" data-tab="files">Arquivos</button>
+    </nav>
+    <section class="panel" id="tab-body"></section>
+  </main>
+
+  <div class="backdrop" id="backdrop" hidden></div>
+  <aside class="drawer" id="drawer" hidden aria-label="Detalhe do commit">
+    <button class="close" id="drawer-close" aria-label="Fechar">×</button>
+    <div id="drawer-body"></div>
+  </aside>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
